@@ -1,37 +1,61 @@
 import React from 'react'
 import Producto from './Producto'
+import Busqueda from './busqueda'
+import {  obtenerProductosParaBusqueda} from './obtenerBusqueda'
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 class ProductContainer extends React.Component{
-    constructor(props) {
-        super(props)
+    constructor() {
+        super();
 
-        console.log('constructor')
 
         this.state={
             productos: [],
-            
-
         }
     }
 
-    componentDidMount() {
-        fetch(' https://api.mercadolibre.com/sites/MCO/search?q=Motorola%20G6')        
-            .then(response => response.json())
-            .then(productosJson => this.setState({productos: productosJson.results}))
-           
-        }
+    
+   
+        
+    handleSearch = async (search) => {
+
+        const responseJson = await obtenerProductosParaBusqueda(search)
+        this.setState({productos: responseJson.results})
+     }   
+
+    renderProducts = productos => {
+        return (
+			<div className="row">
+				{productos.map((producto, i) => {
+                    return <Producto nombre={producto.title} 
+                    precio={producto.price} imagen={producto.thumbnail}/>
+                })}
+					
+			</div>
+		);
+    }
 
       
 
     render (){
+        
 
-        console.log('productos: ', this.state.productos[0].address)
-        //console.log(this.state.productos)
-        //const nombre= this.state.productos[0].title
-        return <Producto nombre={'jjjj'}/>
-
-            
-
+        const {productos} = this.state
+        var test
+        if(productos[0] !== undefined){
+            test = this.renderProducts(productos)       
+        }
+        
+       
+        return (
+        
+        
+		<div className="container">
+             
+        <Busqueda handleSearch= {this.handleSearch}/>   
+		{test}
+		</div>
+		);
     }
 
 
